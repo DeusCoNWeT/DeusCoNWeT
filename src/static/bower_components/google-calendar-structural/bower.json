@@ -1,0 +1,27 @@
+{
+  "name": "google-calendar",
+  "description": "1ª version",
+  "main": "google-calendar.html",
+  "authors": [
+    "Robinson"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#1.2.0",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.10",
+    "google-apis": "GoogleWebComponents/google-apis#^2.0.0",
+    "google-signin": "GoogleWebComponents/google-signin#^2.0.0",
+    "paper-spinner": "PolymerElements/paper-spinner#1.2.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0"
+  }
+}
