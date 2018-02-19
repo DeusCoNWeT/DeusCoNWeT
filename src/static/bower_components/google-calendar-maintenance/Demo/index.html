@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+        <link rel="import" href="../../google-signin/google-signin.html">
+
+        <link rel="import" href="../google-calendar.html"><!--mi componente-->
+        <title>Google Calendar Demo</title>
+        <style>
+            body{
+                width: 100%;
+                height: 100%;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
+    </head>
+
+  
+    <body unresolved>
+        <template id="Demo" is="dom-bind">
+            <!-- FIJARSE QUE EN GOOGLE-LOGIN-MASTER CAMBIA a client_id y scope a scopes-->
+            <google-signin 
+                class="button-login"
+                client-id="233765147918-ht4tefbt4tqka6gjp3d25t22t6v59dco.apps.googleusercontent.com"
+                scopes="https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.readonly"
+                callback="http://localhost:8080" 
+                static="true" 
+                on-google-signin-aware-success="onSignIn">
+            </google-signin>
+           
+            <template is="dom-if" if="{{token}}">
+                    
+                <google-calendar 
+                    calendarId="{{calendarId}}" 
+                    token="{{token}}" 
+                    api_key="{{api_key}}">
+                </google-calendar>
+
+            </template>
+
+        </template>
+
+        <script>
+            Demo.api_key = "AIzaSyANA566tIiOZ3-GXdYZmpeqqY2wWCHmCbw";
+            //Demo.calendarId = "primary"; ASI no funciona
+          //  Demo.token="ya29.GlwoBYt7aew2pJZ41-AkIN-eadohpj-Tecn4k_tThE7irs6zD7RP4L0dAf_KM5bNNj9tB9kkBzJ-xwpzutH_qMMpFad_SbjCDvm_uHBWSTYHB43ZPusnILIBgPIwWQ";
+            Demo.onSignIn = function (googleUser) {
+                // Demo.token = googleUser.detail.token;[PARA GOOGLE-LIGIN-MASTER]
+                Demo.token = googleUser.detail.access_token;
+               // console.log(googleUser);
+                //console.log(googleUser.path[0].attributes[1]);
+            };
+        </script>
+    </body>
+</html>
