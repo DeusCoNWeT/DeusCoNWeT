@@ -27,7 +27,7 @@
         height: var(--facebook-wall-height, 450px);
       }
     </style>
-    <iron-ajax id="requestData" url="https://test.centauro.ls.fi.upm.es/api/aux/facebookTimeline?&access_token={{access_token}}&locale={{locale}}"
+    <iron-ajax id="requestData" url="https://centauro.ls.etsiinf.upm.es/api/aux/facebookTimeline?&access_token={{access_token}}&locale={{locale}}"
       headers="{'Timing-Allow-origin': '*'}" method="GET" handleAs="json" on-response="_dataResponse" on-error="_loadMock">
     </iron-ajax>
     <iron-ajax id="requestMock" url="{{mockUrl}}" method="GET" handleAs="json" on-response="_dataResponse">
