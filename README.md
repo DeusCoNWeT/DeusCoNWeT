@@ -67,8 +67,8 @@ se tiene que modificar el fichero .bowerrc para que consulte también el servido
 {
    "directory": "src/static/bower_components",
    "registry": {
-        "search":["http://centauro.ls.fi.upm.es:5555", "https://bower.herokuapp.com"],
-        "register":"http://centauro.ls.fi.upm.es:5555"
+        "search":["http://centauro.ls.etsiinf.upm.es:5555", "https://bower.herokuapp.com"],
+        "register":"http://centauro.ls.etsiinf.upm.es:5555"
     }
 }
 ```
