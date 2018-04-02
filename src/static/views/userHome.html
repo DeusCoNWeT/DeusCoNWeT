@@ -11,9 +11,10 @@
   .footer {
     display: none !important;
   }
+
   star-rate {
     --star-rate-style: {
-      color:gold;
+      color: gold;
     }
   }
 </style>
@@ -31,10 +32,14 @@
       <div class="btn btn-default" data-toggle="modal" data-target="#help-popup" data-keyboard="false" title="Abrir el menu de ayuda">
         <span class="glyphicon glyphicon-info-sign"></span>
       </div>
+      <div class="btn no-hover disabled unrated-list" data-button title="{{getUnrated()}}">
+        <span class="glyphicon glyphicon-exclamation-sign"></span>
+        <span class="">{{componentsRated.length}}/{{catalogList.length}}</span>
+      </div>
     </div>
-    <div class="component-list  bg-primary vertical layaout" data-list>
-      <p class="add-item" data-index="{{$index}}" data-component="{{item.name}}" data-list ng-repeat="item in listComponentAdded" title="{{itemDescription}}"
-        ng-click="blurList($event)">{{item.name}}</p>
+    <div class="component-list bg-primary vertical layaout" data-list>
+      <p class="add-item" data-index="{{$index}}" data-component="{{item.name}}" data-list ng-repeat="item in listComponentAdded"
+        title="{{itemDescription}}" ng-click="blurList($event)">{{item.name}}</p>
       <p data-list ng-if="listComponentAdded.length == 0">
         {{language.componentAddedEmpty}}
       </p>
@@ -114,7 +119,7 @@
           </div>
           <div id="listCatalog" class="flex">
             <div class="col-md-3 vertical layout catalogItem" ng-create-element id-element="{{item.component_id}}" data-index="{{$index}}"
-             item="item" ng-repeat="item in catalogList | catalogFilter:textFilter:starFilter" data-item="{{item}}">
+              item="item" ng-repeat="item in catalogList | catalogFilter:textFilter:starFilter" data-item="{{item}}">
 
               <!-- token required-->
               <span class="label label-warning warning" ng-hide="checkToken(item, $index)">{{language.noToken}}</span>
@@ -160,7 +165,8 @@
               client_secret="e6c2689affe436017db35146f9eff98199aa3b26ad05a4ba6c15d060798b510e" redirect_uri="{{domain}}" data-version="{{getVersion('pinterest')}}"></pinterest-login>
             <spotify-login data-role="login" ng-show="showLoginButton('spotify')" redirect_uri="{{domain}}" client_id="a7b3de70814a40908fd482a8eb525878"
               scope="{{getScopes('spotify')}}" data-version="{{getVersion('spotify')}}"></spotify-login>
-            <reddit-login data-role="login" ng-show="showLoginButton('reddit')" redirect_uri="https://centauro.ls.etsiinf.upm.es" client_id="RxkV7Oo-8Zid5Q" client_secret="eF-kiWrj12VmIV62m-NR4YiZgJ8" scope="{{getScopes('reddit')}}" ></reddit-login>
+            <reddit-login data-role="login" ng-show="showLoginButton('reddit')" redirect_uri="https://centauro.ls.etsiinf.upm.es" client_id="RxkV7Oo-8Zid5Q"
+              client_secret="eF-kiWrj12VmIV62m-NR4YiZgJ8" scope="{{getScopes('reddit')}}"></reddit-login>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" ng-click="closeModal('#login-modal')">Close</button>
@@ -173,7 +179,8 @@
     <!-- /.modal -->
   </div>
 
-  <div id="rate-modal" ng-controller="FormCtrl" class="modal fade scrollbar-macosx scroll-content scroll-scrolly_visible" role="dialog" tabindex="-1">
+  <div id="rate-modal" ng-controller="FormCtrl" class="modal fade scrollbar-macosx scroll-content scroll-scrolly_visible" role="dialog"
+    tabindex="-1">
     <div class="modal-dialog modal-md">
       <!-- Modal content-->
       <div class="modal-content">

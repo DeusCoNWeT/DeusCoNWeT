@@ -17,7 +17,7 @@
   right: 0;
   z-index:10000;
 }
-#userHome .left-bar .menu-buttons > div:hover {
+#userHome .left-bar .menu-buttons > div:not(.no-hover):hover {
   color: #fff;
   background-color: #2970af;
   border-color: #204d74;
@@ -43,6 +43,7 @@
   background-color: #2970af;
   border-color: #204d74;
 }
+
 #userHome .nav-buttons .btn:first-child{
   border-top-right-radius: 5px;
   border-top-left-radius: 5px;
@@ -51,6 +52,24 @@
   border-bottom-right-radius: 5px;
   border-bottom-left-radius: 5px;
 }
+
+#userHome .nav-buttons .unrated-list{
+  background-color: #333;
+  position: relative;
+  cursor:auto;
+  opacity: 100;
+}
+#userHome .nav-buttons .unrated-list[title=''] > .glyphicon{
+  display: none;
+  visibility: none;
+}
+#userHome .nav-buttons .unrated-list > .glyphicon {
+  position: absolute;
+  left: 5px;
+  font-size: 14px;
+  color: #FF5722;
+}
+
 #userHome .component-list {
   width: 150px;
   float:left;

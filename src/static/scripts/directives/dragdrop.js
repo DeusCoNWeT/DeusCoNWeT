@@ -217,7 +217,7 @@
           scope.comienzo(e);
         }
       });
-      element.on('dblclick', function (e) {
+      element.on('click', function (e) {
         var canExecute = scope.item.tokenAttr ? scope.item.attributes[scope.item.tokenAttr] !== "" : true;
         if (canExecute) {
           scope.click(e);

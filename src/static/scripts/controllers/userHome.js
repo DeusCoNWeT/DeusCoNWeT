@@ -121,6 +121,17 @@ angular.module('picbit').controller('UserHomeController', ['$scope', '$location'
     $(element).remove();
   };
 
+
+  $scope.getUnrated = function(){
+
+    var list = $scope.catalogList.filter(function(el){
+      return $scope.componentsRated.indexOf(el.component_id) == -1;
+    })
+
+   return list.map(function(el){
+     return '·' + el.component_id + ' ' + $scope.language.unrated;
+   }).join('\n'); 
+  }
   // Cierra las listas cuando se pulsa sobro cualquier otro lado del dashboard
   $('#userHome').click(function (event) {
     if (!event.target.hasAttribute('data-button') && !event.target.hasAttribute('data-list')) {
