@@ -45,8 +45,6 @@
         containement: "parent"
       });
 
-      newTimeline.addClass('context-menu');
-      newTimeline.css(config.style);
       divContainer.append(newTimeline);
       container.append(divContainer);
       container.scope().listComponentAdded.push({
@@ -79,6 +77,9 @@
       })
 
       divContainer.addClass("selected");
+      
+      newTimeline.addClass('context-menu');
+      newTimeline.css(config.style);
 
       divContainer.scope().$on("componentAdded", function(e,data){
         if ( !data.element.is(divContainer) ){

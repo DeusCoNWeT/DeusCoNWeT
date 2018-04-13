@@ -49,7 +49,6 @@ class OAuthTwitterTimelineHandler(webapp2.RequestHandler):
         consumer_key = self.request.get('consumer_key', default_value='')
         consumer_secret = self.request.get('consumer_secret', default_value='')
         access_token = self.request.get('access_token', default_value='')
-
         cookie_value = self.request.cookies.get("session")
         # Check if the user cookies
         if not cookie_value:

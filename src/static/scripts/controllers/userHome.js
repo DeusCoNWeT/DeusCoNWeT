@@ -256,7 +256,7 @@ angular.module('picbit').controller('UserHomeController', ['$scope', '$location'
           // case 'reddit':
           //   break;
           default:
-            $("[id-element='" + $scope.targetComponent + "']").dblclick();
+            $("[id-element='" + $scope.targetComponent + "']").click();
             $scope.loginSelected = undefined;
             $scope.targetComponent= undefined;
             //$backend.setNewNetwork(token, e.detail.userId, social_network).error(registerTokenError);
