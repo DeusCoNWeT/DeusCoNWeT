@@ -153,7 +153,8 @@ class OauthSignUpHandler(SessionHandler):
                 self.response.content_type = "application/json"
                 self.response.write(json.dumps(response))
                 self.response.set_status(400)
-        except KeyError:
+        except KeyError(Exception):
+            print Exception
             response = \
                 {"error": "You must provide access_token, token_id and user_identifier params in the request"}
             self.response.content_type = "application/json"

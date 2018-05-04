@@ -128,7 +128,7 @@ class ComponentListHandler(SessionHandler):
         social_network = self.request.get("social_network", default_value="")
         filter_param = self.request.get("filter",default_value="user")
         list_format = self.request.get("list_format", default_value="reduced")
-
+        
         # Lists of posible values for each param
         filter_list = ["general","user"]
         format_list = ["complete","reduced"]

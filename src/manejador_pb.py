@@ -84,6 +84,111 @@ app = webapp2.WSGIApplication([
 
     (r'/api/oauth/instagram/credenciales', api_oauth.InstagramContainerHandler),
     (r'/api/oauth/instagram/credenciales/(.*)', api_oauth.InstagramCredentialHandler),
+    
+    (r'/api/oauth/spotify/credenciales', api_oauth.SpotifyContainerHandler),
+    (r'/api/oauth/spotify/credenciales/(.*)', api_oauth.SpotifyCredentialHandler)
+    #(r'/api/subscriptions', api_contacto.SubscriptionHandler),
+    ])
 
-    (r'/api/subscriptions', api_contacto.SubscriptionHandler),
-    ], debug=False)
+
+## LOAD STATIC URL FROM app.yaml
+basepath = os.path.dirname(__file__)
+# Load app.yaml
+configFile = os.path.abspath(os.path.join(basepath, "app.yaml"))
+with open(configFile, "r") as ymlfile:
+    cfg = yaml.load(ymlfile)
+
+
+
+
+# Handler for static files. config={static_folder:"STATIC_DIR"} set static folder. Default static
+class staticFiles(webapp2.RequestHandler):
+  def get(self, path):
+    
+    # If url is base (/) load index.html. (Depecrated?)
+    if not path:
+      path = 'index.html'
+    static_folder = self.app.config.get('static_folder', 'static')
+    # Get abs path to file
+    abspath = os.path.join(basepath, static_folder, path)
+    # Try to load the file. If error, throw 404
+    try:
+      f = open(abspath,'r')
+      self.response.out.write(f.read())
+      self.response.headers.add_header('Content-Type', mimetypes.guess_type(abspath)[0])
+    except:
+      self.response.set_status(404)
+
+
+## Return a handler for URL defined on app.yaml like static
+def handlerHelper(files):
+  class handler(webapp2.RequestHandler):
+    def get(self):
+      abspath = os.path.join(basepath, files)
+      try:
+        f = open(abspath,'r')
+        self.response.out.write(f.read())
+        self.response.headers.add_header('Content-Type', mimetypes.guess_type(abspath)[0])
+      except:
+        self.response.set_status(404)
+  return handler
+
+# Load URL from app.yaml
+def createStatic(handler):
+    url = handler['url']
+    files = handler['static_files']
+    return (url, handlerHelper(files))
+
+
+## LOAD APP
+defined_url = [ url for url in cfg['handlers'] if url.has_key('static_files')]
+defined_url = [createStatic(handler) for handler in defined_url]
+
+# Static folder
+static_url = [(r'/(.*)', staticFiles), (r'/\.well-known/(.*)', staticFiles)]
+
+# api_urls + app.yaml urls + static_folder
+full_url = api_url + defined_url + static_url
+app = webapp2.WSGIApplication(full_url, debug=True)
+
+
+
+# MAIN
+def main(argv, name, app):
+    from paste import httpserver
+    from paste.cascade import Cascade
+    from paste.urlparser import StaticURLParser
+    import sys, getopt
+    
+    PORT = 80
+    HOST = 'localhost'
+    SSL = None
+    STATIC = 'static/'
+    # Load config from arguments
+    try:
+        opts, args = getopt.getopt(argv,"", ["port=", "host=", "ssl=", "static="])
+    except getopt.GetoptError:
+        print name + ' [--port PORT] [--host HOST] [--ssl SSL_FILE] [--static STATIC_FOLDER]'
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '--port':
+            PORT = arg
+        elif opt == "--host":
+            HOST = arg
+        elif opt == "--ssl":
+            SSL = arg
+        elif opt == "--static":
+            STATIC = arg
+    # Deploy app
+    if STATIC:
+        static_app = StaticURLParser("static/")
+        app = Cascade([static_app,app])
+    if SSL:
+        ssl_dir = os.path.abspath(os.path.join(basepath, 'cert.pem'))
+        print ssl_dir
+        httpserver.serve(app, host=HOST, port=PORT , server_version=1.0,ssl_pem=ssl_dir)
+    else:
+        httpserver.serve(app, host=HOST, port=PORT , server_version=1.0)
+
+if __name__ == '__main__':
+    main(sys.argv[1:], sys.argv[0], app)
