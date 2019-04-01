@@ -93,6 +93,99 @@ class OAuthTwitterTimelineHandler(webapp2.RequestHandler):
                     self.response.write(json.dumps(response))
                     self.response.set_status(401)
 
+class OAuthTwitterTimelineWithoutSessionHandler(webapp2.RequestHandler):
+
+    def get(self):
+        count = self.request.get('count', default_value='20')
+
+        fields = ['consumer_key', 'consumer_secret','access_token','secret_token']
+        for field in fields:
+          if not self.request.get(field):
+              self.response.content_type = "application/json"
+              response = {'error': field + ' is required'}
+              self.response.write(json.dumps(response))
+              self.response.set_status(401)
+              return 
+        
+        consumer_key = self.request.get('consumer_key')
+        consumer_secret = self.request.get('consumer_secret')
+        access_token = self.request.get('access_token')
+        secret_token = self.request.get('secret_Token')
+        tw = Twython(consumer_key, consumer_secret, access_token, secret)
+        try:
+            response = tw.get_home_timeline()
+            self.response.headers.add_header('Access-Control-Allow-Origin', '*')
+            self.response.headers['Content-Type'] = 'application/json'
+            self.response.write(json.dumps(response))
+            self.response.set_status(200)
+        except exceptions.TwythonAuthError:
+            self.response.content_type = "application/json"
+            response = {'error':'Could not authenticate you'}
+            self.response.write(json.dumps(response))
+            self.response.set_status(401)
+
+
+class OAuthTwitterPostingHandler(webapp2.RequestHandler):
+
+    def get(self):
+        consumer_key = self.request.get('consumer_key', default_value='')
+        consumer_secret = self.request.get('consumer_secret', default_value='')
+        access_token = self.request.get('access_token', default_value='')
+
+        cookie_value = self.request.cookies.get("session")
+        # Check if the user cookies
+        if not cookie_value:
+            self.response.content_type = "application/json"
+            response = {'error':'Could not authenticate you. Cookie session missing'}
+            self.response.write(json.dumps(response))
+            self.response.set_status(401)
+        else:
+            userInfo = mongoDB.getSessionOwner(cookie_value)
+            userSession = User.objects(id=userInfo)
+            if len(userSession) == 0:
+                self.response.content_type = "application/json"
+                response = {'error':'Invalid session cookie'}
+                self.response.write(json.dumps(response))
+                self.response.set_status(401)
+                # count = self.request.get('count', default_value='20')
+                return None
+            tokens = userSession[0]['tokens']
+            twitter_token = None
+
+            for token in tokens:
+                if token['social_name'] == 'twitter':
+                    twitter_token = token
+            print "Token encontrado", twitter_token
+            if not twitter_token:
+                self.response.content_type = "application/json"
+                response = {'error':'Access token is not valid'}
+                self.response.write(json.dumps(response))
+                self.response.set_status(401)
+                # count = self.request.get('count', default_value='20')
+            else:
+
+                secret = mongoDB.getSecret(twitter_token)
+                print access_token, secret, consumer_key, consumer_secret
+                texto = self.request.get('status')
+                if not texto:
+                    self.response.content_type = "application/json"
+                    response = {'error':'It is necessary to twit some text (status)'}
+                    self.response.write(json.dumps(response))
+                    self.response.set_status(400)
+                    return None
+                tw = Twython(consumer_key, consumer_secret, access_token, secret)
+                try:
+                    response=tw.update_status(status=texto)
+                    self.response.headers.add_header('Access-Control-Allow-Origin', '*')
+                    self.response.headers['Content-Type'] = 'application/json'
+                    self.response.write(json.dumps(response))
+                    self.response.set_status(200)
+                except exceptions.TwythonAuthError:
+                    self.response.content_type = "application/json"
+                    response = {'error':'Could not authenticate you'}
+                    self.response.write(json.dumps(response))
+                    self.response.set_status(401)
+              
 class OAuthFacebookAccessToken(webapp2.RequestHandler):
   def get(self):
     access_token = self.request.get("access_token", default_value="")

@@ -48,6 +48,7 @@ api_url =[
     (r'/api/usuarios/(.*)', api_usuarios.UserHandler),
 
     (r'/api/aux/twitterTimeline', api_auxiliar.OAuthTwitterTimelineHandler),
+    (r'/api/aux/twitterPost', api_auxiliar.OAuthTwitterPostingHandler),
     (r'/api/aux/instagramTimeline', api_auxiliar.instagramRequest),
     (r'/api/aux/facebookToken', api_auxiliar.OAuthFacebookAccessToken),
     (r'/api/aux/facebookTimeline', api_auxiliar.OAuthFacebookTimeline),
