@@ -251,11 +251,9 @@ class PostRedditTimeline(webapp2.RequestHandler):
         "title": title,
         "kind": "self"
       }
-      headers = {
-        "Authorization": "bearer" + access_token
-      }
     try:
-      req = urllib2.Request(postURL, data, headers)
+      req = urllib2.Request(postURL, urllib.urlencode(data))
+      req.add_header('Authorization', 'bearer' + access_token)
       response = urllib2.urlopen(req).read()
       self.response.headers.add_header('Access-Control-Allow-Origin', '*')
       self.response.headers['Content-Type'] = 'application/json'
