@@ -52,7 +52,7 @@ api_url =[
     (r'/api/aux/instagramTimeline', api_auxiliar.instagramRequest),
     (r'/api/aux/facebookToken', api_auxiliar.OAuthFacebookAccessToken),
     (r'/api/aux/facebookTimeline', api_auxiliar.OAuthFacebookTimeline),
-
+    (r'/api/aux/redditPost', api_auxiliar.PostRedditTimeline),
     (r'/api/oauth/twitter/signup',api_oauth.TwitterSignUpHandler),
     (r'/api/oauth/twitter/login', api_oauth.TwitterLoginHandler),
     (r'/api/oauth/twitter/logout', api_oauth.TwitterLogoutHandler),

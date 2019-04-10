@@ -266,6 +266,36 @@ class OAuthFacebookTimeline(webapp2.RequestHandler):
           self.response.set_status(e.code)
           self.response.write(e.read())
 
+class PostRedditTimeline(webapp2.RequestHandler):
+  def post(self):
+    title = self.request.get('title', default_value='')
+    username = self.request.get('username', default_value='')
+    access_token = self.requre.get('access_token', default_value='')
+    if (not title or not username or not access_token):
+      self.response.content_type = "application/json"
+      response = {'error':'access_token, title and username are required'}
+      self.response.write(json.dumps(response))
+      self.response.set_status(400)
+    else:
+      postURL = "https://oauth.reddit.com/api/submit"
+      data = {
+        "sr": "u_" + username,
+        "api_type":"json",
+        "title": title,
+        "kind": "self"
+      }
+      headers = {
+        "Authorization": "bearer" + access_token
+      }
+    try:
+      req = urllib2.Request(postURL, data, headers)
+      response = urllib2.urlopen(req).read()
+      self.response.headers.add_header('Access-Control-Allow-Origin', '*')
+      self.response.headers['Content-Type'] = 'application/json'
+      self.response.write(response)
+    except urllib2.HTTPError as e:
+      self.response.set_status(e.code)
+      self.response.read(e.read())
 
 
 class instagramRequest(webapp2.RequestHandler):
