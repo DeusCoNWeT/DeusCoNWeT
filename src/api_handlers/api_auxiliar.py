@@ -131,60 +131,27 @@ class OAuthTwitterPostingHandler(webapp2.RequestHandler):
         consumer_key = self.request.get('consumer_key', default_value='')
         consumer_secret = self.request.get('consumer_secret', default_value='')
         access_token = self.request.get('access_token', default_value='')
-
-        cookie_value = self.request.cookies.get("session")
-        # Check if the user cookies
-        if not cookie_value:
-            self.response.content_type = "application/json"
-            response = {'error':'Could not authenticate you. Cookie session missing'}
-            self.response.write(json.dumps(response))
-            self.response.set_status(401)
-        else:
-            userInfo = mongoDB.getSessionOwner(cookie_value)
-            userSession = User.objects(id=userInfo)
-            if len(userSession) == 0:
-                self.response.content_type = "application/json"
-                response = {'error':'Invalid session cookie'}
-                self.response.write(json.dumps(response))
-                self.response.set_status(401)
-                # count = self.request.get('count', default_value='20')
-                return None
-            tokens = userSession[0]['tokens']
-            twitter_token = None
-
-            for token in tokens:
-                if token['social_name'] == 'twitter':
-                    twitter_token = token
-            print "Token encontrado", twitter_token
-            if not twitter_token:
-                self.response.content_type = "application/json"
-                response = {'error':'Access token is not valid'}
-                self.response.write(json.dumps(response))
-                self.response.set_status(401)
-                # count = self.request.get('count', default_value='20')
-            else:
-
-                secret = mongoDB.getSecret(twitter_token)
-                print access_token, secret, consumer_key, consumer_secret
-                texto = self.request.get('status')
-                if not texto:
-                    self.response.content_type = "application/json"
-                    response = {'error':'It is necessary to twit some text (status)'}
-                    self.response.write(json.dumps(response))
-                    self.response.set_status(400)
-                    return None
-                tw = Twython(consumer_key, consumer_secret, access_token, secret)
-                try:
-                    response=tw.update_status(status=texto)
-                    self.response.headers.add_header('Access-Control-Allow-Origin', '*')
-                    self.response.headers['Content-Type'] = 'application/json'
-                    self.response.write(json.dumps(response))
-                    self.response.set_status(200)
-                except exceptions.TwythonAuthError:
-                    self.response.content_type = "application/json"
-                    response = {'error':'Could not authenticate you'}
-                    self.response.write(json.dumps(response))
-                    self.response.set_status(401)
+        secret_token = self.request.get('secret_token', default_value='')
+        print access_token, secret_token, consumer_key, consumer_secret
+        texto = self.request.get('text')
+        if not texto:
+           self.response.content_type = "application/json"
+           response = {'error':'It is necessary to twit some text (status)'}
+           self.response.write(json.dumps(response))
+           self.response.set_status(400)
+           return None
+        tw = Twython(consumer_key, consumer_secret, access_token, secret_token)
+        try:
+          response=tw.update_status(status=texto)
+          self.response.headers.add_header('Access-Control-Allow-Origin', '*')
+          self.response.headers['Content-Type'] = 'application/json'
+          self.response.write(json.dumps(response))
+          self.response.set_status(200)
+        except exceptions.TwythonAuthError:
+          self.response.content_type = "application/json"
+          response = {'error':'Could not authenticate you'}
+          self.response.write(json.dumps(response))
+          self.response.set_status(401)
               
 class OAuthFacebookAccessToken(webapp2.RequestHandler):
   def get(self):
@@ -266,6 +233,36 @@ class OAuthFacebookTimeline(webapp2.RequestHandler):
           self.response.set_status(e.code)
           self.response.write(e.read())
 
+class PostRedditTimeline(webapp2.RequestHandler):
+  def post(self):
+    title = self.request.get('title', default_value='')
+    username = self.request.get('username', default_value='')
+    access_token = self.requre.get('access_token', default_value='')
+    if (not title or not username or not access_token):
+      self.response.content_type = "application/json"
+      response = {'error':'access_token, title and username are required'}
+      self.response.write(json.dumps(response))
+      self.response.set_status(400)
+    else:
+      postURL = "https://oauth.reddit.com/api/submit"
+      data = {
+        "sr": "u_" + username,
+        "api_type":"json",
+        "title": title,
+        "kind": "self"
+      }
+      headers = {
+        "Authorization": "bearer" + access_token
+      }
+    try:
+      req = urllib2.Request(postURL, data, headers)
+      response = urllib2.urlopen(req).read()
+      self.response.headers.add_header('Access-Control-Allow-Origin', '*')
+      self.response.headers['Content-Type'] = 'application/json'
+      self.response.write(response)
+    except urllib2.HTTPError as e:
+      self.response.set_status(e.code)
+      self.response.read(e.read())
 
 
 class instagramRequest(webapp2.RequestHandler):
