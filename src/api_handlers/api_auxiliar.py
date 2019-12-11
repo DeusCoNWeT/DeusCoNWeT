@@ -237,7 +237,7 @@ class PostRedditTimeline(webapp2.RequestHandler):
   def post(self):
     title = self.request.get('title', default_value='')
     username = self.request.get('username', default_value='')
-    access_token = self.requre.get('access_token', default_value='')
+    access_token = self.request.get('access_token', default_value='')
     if (not title or not username or not access_token):
       self.response.content_type = "application/json"
       response = {'error':'access_token, title and username are required'}
@@ -253,14 +253,16 @@ class PostRedditTimeline(webapp2.RequestHandler):
       }
     try:
       req = urllib2.Request(postURL, urllib.urlencode(data))
-      req.add_header('Authorization', 'bearer' + access_token)
-      response = urllib2.urlopen(req).read()
+      req.add_header('Authorization', 'bearer ' + access_token)
+      req.add_header('User-Agent', username)
+      response = urllib2.urlopen(req)
       self.response.headers.add_header('Access-Control-Allow-Origin', '*')
       self.response.headers['Content-Type'] = 'application/json'
-      self.response.write(response)
+      self.response.write(response.read())
+      self.response.set_status(response.code)
     except urllib2.HTTPError as e:
       self.response.set_status(e.code)
-      self.response.read(e.read())
+      self.response.write(e.read())
 
 
 class instagramRequest(webapp2.RequestHandler):

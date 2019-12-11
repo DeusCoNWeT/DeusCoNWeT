@@ -961,6 +961,7 @@ class TwitterRequestLoginHandler(webapp2.RequestHandler):
         memcache.add(auth['oauth_token'],
                      auth['oauth_token_secret'], time=20 * 60)
         response = {"oauth_url": auth['auth_url']}
+        self.response.set_status(200)
         self.response.write(json.dumps(response))
 
 
